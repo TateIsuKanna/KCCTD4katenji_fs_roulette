@@ -6,14 +6,9 @@ const int RASPI_SOUND_PORT=0;
 const int LED = 49; // 9pin use
 const int BUTTON_PORT=12;
 const int DIFFICULTY_LED_FIRST_PORT=13;
+int difficulty;
 
 int current_LED_position;
-
-unsigned long time_m = 0;
-unsigned long time_n = 0;
-unsigned long time_nagasa = 0;
-unsigned long EASY = 5000;
-unsigned long NOMAL = 10000;
 
 void setup(){
 	for(int i=22;i<=LED;i++){
@@ -36,7 +31,7 @@ void setup(){
 
 //難易度設定
 
-void judge(int difficulty){
+void judge(){
 	for(long t=0;t<6000/pow(2,difficulty);t++){
 		if((digitalRead(ACCELEROMETER_PORT)==HIGH&&digitalRead(48)==HIGH)||(digitalRead(ACCELEROMETER_PORT)==HIGH&&digitalRead(47)==HIGH)){
 			while(true){
@@ -69,7 +64,7 @@ int DIFFICULTY_LED_DATA[][4]=
 	{0,0,0,1}
 };
 
-void set_difficulty(){
+int set_difficulty(){
 	while(digitalRead(13)==HIGH);
 
 	unsigned long int count=0;
@@ -83,6 +78,7 @@ void set_difficulty(){
 			delay(10);
 		}
 	}
+	difficulty=count/200;
 }
 
 void loop(){  
@@ -105,14 +101,13 @@ void loop(){
 		delay(1000);
 	}
 
-	int difficulty=0;//DEBUG
 	for(current_LED_position=22;current_LED_position<=LED;current_LED_position++){
 		digitalWrite(current_LED_position,HIGH);
 		tone( SPEAKER_PORT, 622);
-		judge(difficulty);
+		judge();
 		digitalWrite(current_LED_position,LOW);
 		noTone(SPEAKER_PORT);
-		judge(difficulty);
+		judge();
 	}
 
 	while(digitalRead(RESTART_PORT)==LOW){
